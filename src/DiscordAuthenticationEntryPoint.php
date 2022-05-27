@@ -39,7 +39,7 @@ class DiscordAuthenticationEntryPoint implements AuthenticationEntryPointInterfa
      */
     public function start(Request $request, AuthenticationException $authException = null): Response
     {
-        $redirect = $this->urlGenerator->generate($this->redirectRoute);
+        $redirect = $this->urlGenerator->generate($this->redirectRoute, [], UrlGeneratorInterface::ABSOLUTE_URL);
         $client = $this->discordClient;
         return new RedirectResponse("https://discord.com/api/oauth2/authorize?client_id=$client&scope=identify&response_type=code&redirect_uri=$redirect&prompt=none");
     }
