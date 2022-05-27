@@ -18,39 +18,28 @@ use Symfony\Component\Security\Http\Authenticator\AuthenticatorInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
-use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use TBCD\DiscordAuthenticator\OAuth\DiscordOAuthClient;
 use TBCD\DiscordAuthenticator\Token\DiscordToken;
 
-class DiscordAuthenticator implements AuthenticatorInterface, AuthenticationEntryPointInterface
+class DiscordAuthenticator implements AuthenticatorInterface
 {
 
     protected ?AuthenticationFailureHandlerInterface $authenticationFailureHandler;
     protected ?AuthenticationSuccessHandlerInterface $authenticationSuccessHandler;
-    protected AuthenticationEntryPointInterface $authenticationEntryPoint;
     protected RouterInterface $router;
     protected DiscordOAuthClient $discordOAuthClient;
     protected string $redirectRoute;
 
-    public function __construct(AuthenticationEntryPointInterface $authenticationEntryPoint, RouterInterface $router, DiscordOAuthClient $discordOAuthClient, string $redirectRoute, AuthenticationFailureHandlerInterface $authenticationFailureHandler = null, AuthenticationSuccessHandlerInterface $authenticationSuccessHandler = null)
+    public function __construct(RouterInterface $router, DiscordOAuthClient $discordOAuthClient, string $redirectRoute, AuthenticationFailureHandlerInterface $authenticationFailureHandler = null, AuthenticationSuccessHandlerInterface $authenticationSuccessHandler = null)
     {
         $this->authenticationFailureHandler = $authenticationFailureHandler;
         $this->authenticationSuccessHandler = $authenticationSuccessHandler;
-        $this->authenticationEntryPoint = $authenticationEntryPoint;
         $this->router = $router;
         $this->discordOAuthClient = $discordOAuthClient;
         $this->redirectRoute = $redirectRoute;
     }
 
-
-    /**
-     * @inheritDoc
-     */
-    public function start(Request $request, AuthenticationException $authException = null): Response
-    {
-        return $this->authenticationEntryPoint->start($request, $authException);
-    }
 
     /**
      * @inheritDoc

@@ -22,6 +22,8 @@ class DiscordOAuthClient
     public const EXPIRATION_TOKEN_KEY = 'expires_in';
     public const REFRESH_TOKEN_KEY = 'refresh_token';
 
+    public const REDIRECT_URI_CONTEXT = 'redirect_uri';
+
     private HttpClientInterface $httpClient;
     private UrlGeneratorInterface $urlGenerator;
     private string $redirectRoute;
@@ -40,12 +42,13 @@ class DiscordOAuthClient
 
     /**
      * @param string $authCode
+     * @param array $context
      * @return DiscordOAuthResponse
      * @throws ExceptionInterface
      */
-    public function getCredentials(string $authCode): DiscordOAuthResponse
+    public function getCredentials(string $authCode, array $context = []): DiscordOAuthResponse
     {
-        $credentials = $this->getAccessToken($authCode);
+        $credentials = $this->getAccessToken($authCode, $context);
         $userInfo = $this->getUserInfo($credentials[self::ACCESS_TOKEN_KEY]);
         return new DiscordOAuthResponse(
             $userInfo[self::ID_KEY],
@@ -58,17 +61,18 @@ class DiscordOAuthClient
 
     /**
      * @param string $authCode
+     * @param array $context
      * @return array
      * @throws ExceptionInterface
      */
-    private function getAccessToken(string $authCode): array
+    private function getAccessToken(string $authCode, array $context = []): array
     {
         $url = 'https://discord.com/api/oauth2/token';
         $payload = [
             'grant_type' => "authorization_code",
             'client_id' => $this->discordClient,
             'client_secret' => $this->discordSecret,
-            'redirect_uri' => $this->urlGenerator->generate($this->redirectRoute, [], UrlGeneratorInterface::ABSOLUTE_URL),
+            'redirect_uri' => $context[self::REDIRECT_URI_CONTEXT] ?? $this->urlGenerator->generate($this->redirectRoute, [], UrlGeneratorInterface::ABSOLUTE_URL),
             'code' => $authCode
         ];
         $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
