@@ -9,7 +9,7 @@ namespace TBCD\DiscordAuthenticator\Authenticator;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
@@ -29,16 +29,16 @@ class DiscordAuthenticator implements AuthenticatorInterface, AuthenticationEntr
     protected ?AuthenticationFailureHandlerInterface $authenticationFailureHandler;
     protected ?AuthenticationSuccessHandlerInterface $authenticationSuccessHandler;
     protected AuthenticationEntryPointInterface $authenticationEntryPoint;
-    protected UrlGeneratorInterface $urlGenerator;
+    protected RouterInterface $router;
     protected DiscordOAuthClient $discordOAuthClient;
     protected string $redirectRoute;
 
-    public function __construct(AuthenticationEntryPointInterface $authenticationEntryPoint, UrlGeneratorInterface $urlGenerator, DiscordOAuthClient $discordOAuthClient, string $redirectRoute, AuthenticationFailureHandlerInterface $authenticationFailureHandler = null, AuthenticationSuccessHandlerInterface $authenticationSuccessHandler = null)
+    public function __construct(AuthenticationEntryPointInterface $authenticationEntryPoint, RouterInterface $router, DiscordOAuthClient $discordOAuthClient, string $redirectRoute, AuthenticationFailureHandlerInterface $authenticationFailureHandler = null, AuthenticationSuccessHandlerInterface $authenticationSuccessHandler = null)
     {
         $this->authenticationFailureHandler = $authenticationFailureHandler;
         $this->authenticationSuccessHandler = $authenticationSuccessHandler;
         $this->authenticationEntryPoint = $authenticationEntryPoint;
-        $this->urlGenerator = $urlGenerator;
+        $this->router = $router;
         $this->discordOAuthClient = $discordOAuthClient;
         $this->redirectRoute = $redirectRoute;
     }
@@ -57,7 +57,7 @@ class DiscordAuthenticator implements AuthenticatorInterface, AuthenticationEntr
      */
     public function supports(Request $request): bool
     {
-        return $request->getUri() === $this->urlGenerator->generate($this->redirectRoute);
+        return $this->router->match($request->getPathInfo())['_route'] === $this->redirectRoute;
     }
 
     /**
