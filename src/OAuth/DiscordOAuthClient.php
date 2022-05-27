@@ -68,7 +68,7 @@ class DiscordOAuthClient
             'grant_type' => "authorization_code",
             'client_id' => $this->discordClient,
             'client_secret' => $this->discordSecret,
-            'redirect_uri' => $this->urlGenerator->generate($this->redirectRoute),
+            'redirect_uri' => $this->urlGenerator->generate($this->redirectRoute, [], UrlGeneratorInterface::ABSOLUTE_URL),
             'code' => $authCode
         ];
         $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
