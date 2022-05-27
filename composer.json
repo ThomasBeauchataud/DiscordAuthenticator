@@ -10,7 +10,7 @@
     "license": "MIT",
     "minimum-stability": "stable",
     "prefer-stable": true,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "require": {
         "php": ">=8.0.2",
         "symfony/security-core": "^6.0",
